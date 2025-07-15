@@ -1,0 +1,223 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+  - docassemble.LITLabTheme:main.yml
+---
+modules:
+  - .google_sheets
+---
+metadata:
+  title: Document Assembly Line volunteer signup
+  description: Learn more about volunteering with the Document Assembly Line.
+  link: https://assemblyline.suffolklitlab.org/volunteer
+---
+objects:
+  - volunteer: Individual
+  - opportunities: DAList
+  - languages: DAList
+  - litlab_email: DAEmailRecipient.using(name="Suffolk LIT Lab volunteer signup", address="litlab@suffolk.edu")
+---
+### Interview order ###
+mandatory: True
+code: |
+  volunteer.name.first
+  volunteer.email
+  volunteer.interested_in
+  if volunteer.interested_in['interview_building']:
+    volunteer.docassemble_experience
+  if volunteer.interested_in['review_translations']:
+    volunteer.languages_known
+  submit
+  google_sheet_updated
+  email_sent
+  thank_you
+---
+question: What is your name?
+fields:
+  - First name: volunteer.name.first
+  - Last name: volunteer.name.last
+---
+question: What is your email address?
+fields:
+  - Email address: volunteer.email
+    datatype: email
+---
+code: |
+  opportunities = [
+    {
+      'interview_building': "Interview updates",
+      'help': "Building and maintaining the interviews on Court Forms Online"
+    },
+    {
+      'data_validation': "Data validation",
+      'help': "such as checking courthouse addresses"
+    },
+    {
+      'checking_interviews_for_updates': "Testing",
+      'help': "Checking interviews for updates"
+    },
+    {
+      'review_translations': "Translation",
+      'help': "Reviewing interview translations"
+    }
+  ]
+---
+question: Which opportunities are you interested in?
+subquestion: For more detail about these opportunities, visit the Document Assembly Line [volunteer page](https://assemblyline.suffolklitlab.org/volunteer).
+datatype: checkboxes
+fields:
+  - no label: volunteer.interested_in
+    datatype: checkboxes
+    choices: 
+      code: |
+        opportunities
+    none of the above: False
+---
+id: Docassemble experience
+question: How much experience do you have with Docassemble?
+field: volunteer.docassemble_experience
+choices:
+  - None
+  - Some
+  - Lots
+none of the above: False
+---
+code: |
+  # This is the list of language we need translators for.
+  languages = [
+    'Spanish',
+    'Portuguese',
+    'Haitian Creole',
+    'Vietnamese',
+    'Khmer',
+    'Cape Verdean Creole',
+    'Chinese'
+  ]
+---
+id: languages known
+question: Which written languages can you translate from English?
+subquestion: This list reflects our current needs.
+datatype: checkboxes
+fields:
+  - Select languages: volunteer.languages_known
+    datatype: checkboxes
+    choices: 
+      code: |
+        languages
+    none of the above: False
+  - Are you able to translate any other languages?: knows_other_languages
+    datatype: yesnoradio
+  - Other languages: volunteer.other_languages_known
+    show if: knows_other_languages
+---
+question: Review before sending
+subquestion: |
+  **Don't leave without clicking the Submit button below!**
+  
+  Here are your responses:
+review:
+  - Edit: 
+    - volunteer.name.first
+    - volunteer.name.last
+    button: |
+      **Name:** ${ volunteer.name.full() }
+  - Edit: volunteer.email
+    button: |
+      **Email address:** ${ volunteer.email }
+  - Edit: volunteer.interested_in
+    button: |
+      **Opportunities you are interested in:**
+      
+      % for opp_key in volunteer.interested_in.true_values():
+      % for opp in opportunities:
+      % if opp_key in opp:
+      * ${ opp[ opp_key ] }<br>
+      % endif
+      % endfor
+      % endfor
+  - Edit: volunteer.docassemble_experience
+    button: |
+      **Your experience with Docassemble:** 
+      % if volunteer.docassemble_experience:
+      ${ volunteer.docassemble_experience }
+      % else:
+      None
+      % endif
+  - Edit: volunteer.languages_known
+    button: |
+      **Languages you can translate:**
+
+      % if volunteer.languages_known.any_true():
+      % for lang in volunteer.languages_known.true_values():
+      * ${ lang }
+      % endfor
+      % if volunteer.other_languages_known:
+      * Other: ${ volunteer.other_languages_known }
+      % endif
+      % else:
+      None
+      % endif
+continue button label: Submit
+continue button field: submit
+---
+code: |
+  selected_opportunities = []
+  for opp_key in volunteer.interested_in.true_values():
+    for opp in opportunities:
+      if opp_key in opp:
+        selected_opportunities.append( opp[ opp_key ] )
+  
+  append_to_sheet(
+    'Volunteer signups',
+    [
+      volunteer.name.full(),
+      volunteer.email,
+      comma_list( selected_opportunities ),
+      volunteer.docassemble_experience,
+      comma_list( volunteer.languages_known.true_values() ),
+      volunteer.other_languages_known
+    ]
+  )
+  google_sheet_updated = True
+---
+code: |
+  email_sent = send_email(
+    to=litlab_email,
+    reply_to=volunteer,
+    template=notification
+  )
+---
+template: notification
+subject: ${ volunteer.name.full() } is interested in volunteering!
+content: |
+  **Name:** ${ volunteer.name.full() }
+  
+  **Email address:** ${ volunteer.email }
+
+  **${ volunteer.name.first } is interested in:**
+      
+  % for opp_key in volunteer.interested_in.true_values():
+  % for opp in opportunities:
+  % if opp_key in opp:
+  * ${ opp[ opp_key ] }<br>
+  % endif
+  % endfor
+  % endfor
+
+  % if volunteer.docassemble_experience:
+  **Experience with Docassemble:** ${ volunteer.docassemble_experience }
+  % endif
+
+  % if volunteer.languages_known.any_true():
+  **Languages ${ volunteer.name.first } can translate:**
+  
+  % for lang in volunteer.languages_known.true_values():
+  * ${ lang }
+  % endfor
+  % if volunteer.other_languages_known:
+  * Other: ${ volunteer.other_languages_known }
+  % endif
+  % endif
+---
+event: thank_you
+question: Thanks, ${ volunteer.name.first }! We'll be in touch shortly.
