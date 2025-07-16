@@ -25,7 +25,7 @@ code: |
   volunteer.interested_in
   if volunteer.interested_in['interview_building']:
     volunteer.docassemble_experience
-  if volunteer.interested_in['review_translations']:
+  if volunteer.interested_in['translation']:
     volunteer.languages_known
   submit
   google_sheet_updated
@@ -46,24 +46,25 @@ code: |
   opportunities = [
     {
       'interview_building': "Interview updates",
-      'help': "Building and maintaining the interviews on Court Forms Online"
+      'help': "Help us work through our backlog of update tasks."
+    },
+    {
+      'user_testing': "Testing",
+      'help': "Test live interviews and report issues for the updates team."
+    },
+    {
+      'translation': "Translation",
+      'help': "Review translations for accuracy."
     },
     {
       'data_validation': "Data validation",
-      'help': "such as checking courthouse addresses"
-    },
-    {
-      'checking_interviews_for_updates': "Testing",
-      'help': "Checking interviews for updates"
-    },
-    {
-      'review_translations': "Translation",
-      'help': "Reviewing interview translations"
+      'help': "Update data sources like courthouse addresses."
     }
   ]
 ---
 question: Which opportunities are you interested in?
-subquestion: For more detail about these opportunities, visit the Document Assembly Line [volunteer page](https://assemblyline.suffolklitlab.org/volunteer).
+subquestion: |
+  Click the :circle-question: for a description. For more details, visit the Document Assembly Line [volunteer page](https://assemblyline.suffolklitlab.org/volunteer).
 datatype: checkboxes
 fields:
   - no label: volunteer.interested_in
@@ -91,7 +92,8 @@ code: |
     'Vietnamese',
     'Khmer',
     'Cape Verdean Creole',
-    'Chinese'
+    'Chinese',
+    'Other'
   ]
 ---
 id: languages known
@@ -105,10 +107,8 @@ fields:
       code: |
         languages
     none of the above: False
-  - Are you able to translate any other languages?: knows_other_languages
-    datatype: yesnoradio
   - Other languages: volunteer.other_languages_known
-    show if: knows_other_languages
+    show if: volunteer.languages_known['Other']
 ---
 question: Review before sending
 subquestion: |
@@ -203,7 +203,7 @@ content: |
   % endif
   % endfor
   % endfor
-
+  
   % if volunteer.docassemble_experience:
   **Experience with Docassemble:** ${ volunteer.docassemble_experience }
   % endif
@@ -220,4 +220,8 @@ content: |
   % endif
 ---
 event: thank_you
-question: Thanks, ${ volunteer.name.first }! We'll be in touch shortly.
+question: Thanks, ${ volunteer.name.first }!
+subquestion: |
+  We'll be in touch shortly.
+
+  In the meantime, check out [the latest Document Assembly Line updates](https://suffolklitlab.org/category/document-assembly-line/) on the LIT Lab blog.

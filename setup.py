@@ -46,7 +46,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
 setup(name='docassemble.DALVolunteerSignup',
       version='1.0.0',
       description=('A volunteer signup form for the Document Assembly Line.'),
-      long_description='# docassemble.DALVolunteerSignup\n\nA volunteer signup form for the Document Assembly Line.\n\n## Author\n\nSam Glover, sam.glover@suffolk.edu\n\n',
+      long_description='# docassemble.DALVolunteerSignup\r\n\r\nA volunteer signup form for the Document Assembly Line.\r\n\r\n## Author\r\n\r\nSam Glover, sam.glover@suffolk.edu\r\n\r\n',
       long_description_content_type='text/markdown',
       author='Suffolk LIT Lab',
       author_email='litlab@suffolk.edu',
