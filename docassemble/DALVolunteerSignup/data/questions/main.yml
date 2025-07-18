@@ -144,16 +144,18 @@ review:
       None
       % endif
   - Edit: volunteer.languages_known
+    show if: volunteer.interested_in['translation']
     button: |
       **Languages you can translate:**
 
-      % if volunteer.languages_known.any_true():
+      % if volunteer.interested_in['translation']:
       % for lang in volunteer.languages_known.true_values():
+      % if lang == 'Other':
+      * ${ lang }: ${ volunteer.other_languages_known }
+      % else:
       * ${ lang }
-      % endfor
-      % if volunteer.other_languages_known:
-      * Other: ${ volunteer.other_languages_known }
       % endif
+      % endfor
       % else:
       None
       % endif
@@ -174,8 +176,8 @@ code: |
       volunteer.email,
       comma_list( selected_opportunities ),
       volunteer.docassemble_experience,
-      comma_list( volunteer.languages_known.true_values() ),
-      volunteer.other_languages_known
+      comma_list( volunteer.languages_known.true_values() ) if volunteer.interested_in['translation'] else '',
+      volunteer.other_languages_known if volunteer.interested_in['translation'] and volunteer.languages_known['Other'] else ''
     ]
   )
   google_sheet_updated = True
@@ -208,15 +210,16 @@ content: |
   **Experience with Docassemble:** ${ volunteer.docassemble_experience }
   % endif
 
-  % if volunteer.languages_known.any_true():
+  % if volunteer.interested_in['translation']:
   **Languages ${ volunteer.name.first } can translate:**
   
   % for lang in volunteer.languages_known.true_values():
+  % if lang == 'Other':
+  * ${ lang }: ${ volunteer.other_languages_known }
+  % else:
   * ${ lang }
-  % endfor
-  % if volunteer.other_languages_known:
-  * Other: ${ volunteer.other_languages_known }
   % endif
+  % endfor
   % endif
 ---
 event: thank_you
