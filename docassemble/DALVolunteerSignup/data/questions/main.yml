@@ -45,8 +45,8 @@ fields:
 code: |
   opportunities = [
     {
-      'interview_building': "Updating code",
-      'help': "Help us work through our backlog of interview code improvements and updates."
+      'interview_building': "Updating",
+      'help': "Help us work through our backlog of interview improvements and updates."
     },
     {
       'user_testing': "Testing",
