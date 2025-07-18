@@ -45,20 +45,20 @@ fields:
 code: |
   opportunities = [
     {
-      'interview_building': "Interview updates",
-      'help': "Help us work through our backlog of update tasks."
+      'interview_building': "Updating code",
+      'help': "Help us work through our backlog of interview code improvements and updates."
     },
     {
       'user_testing': "Testing",
-      'help': "Test live interviews and report issues for the updates team."
+      'help': "Test live interviews and create issue reports that the update team can use to strengthen the interviews."
     },
     {
-      'translation': "Translation",
-      'help': "Review translations for accuracy."
+      'translation': "Reviewing translations",
+      'help': "Review interview translations for accuracy."
     },
     {
-      'data_validation': "Data validation",
-      'help': "Update data sources like courthouse addresses."
+      'data_validation': "Updating data",
+      'help': "Check and update data sources like courthouse addresses."
     }
   ]
 ---
