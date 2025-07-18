@@ -136,9 +136,10 @@ review:
       % endfor
       % endfor
   - Edit: volunteer.docassemble_experience
+    show if: volunteer.interested_in['interview_building']
     button: |
       **Your experience with Docassemble:** 
-      % if volunteer.docassemble_experience:
+      % if volunteer.interested_in['interview_building']:
       ${ volunteer.docassemble_experience }
       % else:
       None
@@ -173,7 +174,7 @@ code: |
       volunteer.name.full(),
       volunteer.email,
       comma_list( selected_opportunities ),
-      volunteer.docassemble_experience,
+      volunteer.docassemble_experience if volunteer.interested_in['interview_building'] else '',
       comma_list( volunteer.languages_known.true_values() ),
       volunteer.other_languages_known
     ]
@@ -204,7 +205,7 @@ content: |
   % endfor
   % endfor
   
-  % if volunteer.docassemble_experience:
+  % if volunteer.interested_in['interview_building']:
   **Experience with Docassemble:** ${ volunteer.docassemble_experience }
   % endif
 
